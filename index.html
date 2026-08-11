@@ -413,6 +413,26 @@ h2.title{font-size:clamp(1.9rem,3.6vw,2.7rem);margin-bottom:8px;}
   inherits:false;
   initial-value:0;
 }
+@property --cream-settle{
+  syntax:'<number>';
+  inherits:false;
+  initial-value:1;
+}
+@property --cream-shift-x{
+  syntax:'<length>';
+  inherits:false;
+  initial-value:0px;
+}
+@property --cream-shift-y{
+  syntax:'<length>';
+  inherits:false;
+  initial-value:0px;
+}
+@property --cream-skew{
+  syntax:'<angle>';
+  inherits:false;
+  initial-value:0deg;
+}
 
 .area-card,
 .concept-frame,
@@ -432,9 +452,9 @@ h2.title{font-size:clamp(1.9rem,3.6vw,2.7rem);margin-bottom:8px;}
   content:'';
   position:absolute;
   z-index:0;
-  /* La crema conserva exactamente el ancho de la caja. */
-  left:0;
-  width:100%;
+  /* Un píxel extra a cada lado evita cortes por redondeo del navegador. */
+  left:-1px;
+  width:calc(100% + 2px);
   top:calc(100% - 12px);
   height:var(--melt-depth,72px);
   background:linear-gradient(180deg,#ffffff 0%,#ffffff 72%,#fdf3f7 100%);
@@ -443,8 +463,16 @@ h2.title{font-size:clamp(1.9rem,3.6vw,2.7rem);margin-bottom:8px;}
   filter:drop-shadow(0 14px 10px rgba(200,40,110,0.16));
   pointer-events:none;
   transform-origin:50% 0;
-  transform:scale(var(--melt-x,1),calc(var(--melt-y,1) + var(--cream-breathe,0)));
+  transform:
+    translate3d(var(--cream-shift-x,0px),var(--cream-shift-y,0px),0)
+    skewX(var(--cream-skew,0deg))
+    scaleX(var(--melt-x,1))
+    scaleY(var(--cream-settle,1))
+    scaleY(calc(var(--melt-y,1) + var(--cream-breathe,0)));
   transition:transform 0.46s cubic-bezier(.22,1,.36,1);
+  will-change:transform,mask-position,mask-size;
+  /* La crema se mueve siempre, desde que abre la página. */
+  animation:creamPulse var(--cream-speed,4.2s) ease-in-out var(--cream-delay,0s) infinite;
 }
 
 .area-card > *,
@@ -726,20 +754,57 @@ figcaption{
 .mock-frame.melt-awake::after{
   animation:
     frostingSettle .95s cubic-bezier(.22,1,.36,1) both,
-    creamPulse var(--cream-speed,7.6s) ease-in-out var(--cream-delay,0s) infinite;
+    creamPulse var(--cream-speed,4.2s) ease-in-out var(--cream-delay,0s) infinite;
 }
 @keyframes frostingSettle{
-  0%{opacity:.35;transform:scale(var(--melt-x,1),.28);}
-  54%{opacity:1;transform:scale(var(--melt-x,1),1.14);}
-  76%{transform:scale(var(--melt-x,1),.96);}
-  100%{opacity:1;transform:scale(var(--melt-x,1),var(--melt-y,1));}
+  0%{opacity:.35;--cream-settle:.28;}
+  54%{opacity:1;--cream-settle:1.10;}
+  76%{--cream-settle:.97;}
+  100%{opacity:1;--cream-settle:1;}
 }
 
-/* Las gotas cambian físicamente de profundidad; la sombra permanece fija. */
+/* Movimiento orgánico continuo y visible de las gotas de crema. */
 @keyframes creamPulse{
-  0%,100%{--cream-breathe:0;translate:0 0;}
-  32%{--cream-breathe:.035;translate:0 1px;}
-  67%{--cream-breathe:-.018;translate:0 -.5px;}
+  0%,100%{
+    --cream-breathe:-.035;
+    --cream-shift-x:0px;
+    --cream-shift-y:-1px;
+    --cream-skew:0deg;
+    -webkit-mask-position:50% 0;
+    -webkit-mask-size:100% 96%;
+    mask-position:50% 0;
+    mask-size:100% 96%;
+  }
+  26%{
+    --cream-breathe:.085;
+    --cream-shift-x:0px;
+    --cream-shift-y:2.6px;
+    --cream-skew:0deg;
+    -webkit-mask-position:50% 0;
+    -webkit-mask-size:100% 111%;
+    mask-position:50% 0;
+    mask-size:100% 111%;
+  }
+  53%{
+    --cream-breathe:.015;
+    --cream-shift-x:0px;
+    --cream-shift-y:.5px;
+    --cream-skew:0deg;
+    -webkit-mask-position:50% 0;
+    -webkit-mask-size:100% 101%;
+    mask-position:50% 0;
+    mask-size:100% 101%;
+  }
+  78%{
+    --cream-breathe:.105;
+    --cream-shift-x:0px;
+    --cream-shift-y:3.2px;
+    --cream-skew:0deg;
+    -webkit-mask-position:50% 0;
+    -webkit-mask-size:100% 114%;
+    mask-position:50% 0;
+    mask-size:100% 114%;
+  }
 }
 
 .melt-awake img{animation:softBakeIn 1.1s cubic-bezier(.16,1,.3,1);}
@@ -788,11 +853,6 @@ body.ux-scrolled .scrollcue{opacity:0!important;transform:translate(-50%,12px)!i
 @media (prefers-reduced-motion:reduce){
   #sprinkle-layer{display:none!important;}
   #frosting-progress .fill{transition:none;}
-  .area-card::after,.concept-frame::after,.tab-frame::after,.swatchwrap::after,.mock-frame::after{
-    animation:none!important;
-    transform:scale(var(--melt-x,1),1)!important;
-    transition:none!important;
-  }
   .section-divider span,#navdots a.active::after{animation:none!important;}
   .blob{translate:none!important;}
 }
@@ -1205,8 +1265,8 @@ if(cuteMixerCursor && finePointer){
 
 // Cada crema respira a un ritmo ligeramente distinto para evitar repetición mecánica.
 meltCards.forEach((card,index)=>{
-  card.style.setProperty('--cream-speed',(6.8+(index%5)*.55)+'s');
-  card.style.setProperty('--cream-delay',(-index*.43)+'s');
+  card.style.setProperty('--cream-speed',(3.8+(index%5)*.28)+'s');
+  card.style.setProperty('--cream-delay',(-index*.37)+'s');
 });
 
 function sprinkleBurst(x,y,count=9){
