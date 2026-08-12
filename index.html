@@ -288,9 +288,11 @@ body.intro-done .scrollcue{animation:scrollcueIn 0.6s 1.4s cubic-bezier(.22,1,.3
   align-items:center;
   justify-content:center;
   gap:14px;
+  position:relative;
+  z-index:6;
   padding:0 8vw;
   max-width:1300px;
-  margin:0 auto;
+  margin:64px auto;
 }
 .section-divider::before,
 .section-divider::after{
@@ -305,6 +307,12 @@ body.intro-done .scrollcue{animation:scrollcueIn 0.6s 1.4s cubic-bezier(.22,1,.3
   background:var(--pink);
   transform:rotate(45deg);
   flex-shrink:0;
+}
+@media (max-width:700px){
+  .section-divider{
+    margin-top:48px;
+    margin-bottom:48px;
+  }
 }
 .section-alt{background:var(--bg-soft);}
 
@@ -927,11 +935,11 @@ body.intro-lock{overflow:hidden;}
 }
 .bake-intro-name{
   margin:12px 0 0;
-  font-family:'Space Grotesk',sans-serif;
-  font-size:clamp(1.05rem,4.6vw,1.35rem);
+  font-family:'Work Sans',sans-serif;
+  font-size:clamp(1.12rem,4.8vw,1.48rem);
   font-weight:600;
-  letter-spacing:.12em;
-  text-transform:uppercase;
+  letter-spacing:.02em;
+  text-transform:none;
   color:var(--pink-deep);
   opacity:0;
   animation:introName .4s .86s ease forwards;
@@ -961,8 +969,8 @@ body.intro-lock{overflow:hidden;}
   to{transform:translateY(-1px);}
 }
 @keyframes introName{
-  from{opacity:0;transform:translateY(8px);letter-spacing:.2em;}
-  to{opacity:1;transform:translateY(0);letter-spacing:.12em;}
+  from{opacity:0;transform:translateY(8px);letter-spacing:.12em;}
+  to{opacity:1;transform:translateY(0);letter-spacing:.02em;}
 }
 @media (prefers-reduced-motion:reduce){
   .intro-bowl-group,.intro-spiral-shell,.intro-spiral-current,.intro-whisk,.bake-intro-name{animation:none!important;}
